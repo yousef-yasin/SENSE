@@ -1,0 +1,4 @@
+SENSE_BUNDLE_IDENTIFIER = app.sense.ios
+DEVELOPMENT_TEAM =
+
+#include? "Local.xcconfig"

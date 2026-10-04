@@ -1,0 +1,78 @@
+name: SENSE
+
+options:
+  bundleIdPrefix: app.sense
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+configFiles:
+  Debug: Config/SENSE.xcconfig
+  Release: Config/SENSE.xcconfig
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+
+packages:
+  SenseCore:
+    path: Packages/SenseCore
+
+targets:
+  SENSE:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    dependencies:
+      - package: SenseCore
+    info:
+      path: Config/Info.plist
+      properties:
+        CFBundleDisplayName: SENSE
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        LSApplicationCategoryType: public.app-category.productivity
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSCameraUsageDescription: SENSE uses the camera only while you capture or look at something, to read text and recognize what's in front of you. Images are processed on your iPhone.
+        NSMicrophoneUsageDescription: SENSE listens only while a voice capture is open, so it can understand what you say.
+        NSSpeechRecognitionUsageDescription: SENSE turns your voice captures into text. When your iPhone supports it, this happens entirely on device.
+        NSLocationWhenInUseUsageDescription: SENSE uses your location to remind you when you arrive at or leave places you choose, and to tag memories with where they were captured if you turn that on.
+        NSLocalNetworkUsageDescription: SENSE connects to an AI server on your local network only if you set one up in Settings.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    settings:
+      base:
+        PRODUCT_NAME: SENSE
+        PRODUCT_BUNDLE_IDENTIFIER: $(SENSE_BUNDLE_IDENTIFIER)
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+
+schemes:
+  SENSE:
+    build:
+      targets:
+        SENSE: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - package: SenseCore/SenseCoreTests
+    archive:
+      config: Release
