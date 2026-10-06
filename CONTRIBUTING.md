@@ -12,10 +12,10 @@ Thanks for helping improve SENSE.
 ## Development setup
 
 ```bash
-brew install xcodegen
-xcodegen generate
-open SENSE.xcodeproj
+scripts/setup.sh
 ```
+
+This installs XcodeGen if needed, generates the project and opens it.
 
 The Xcode project is generated from `project.yml`; don't commit `SENSE.xcodeproj`. Put signing settings in `Config/Local.xcconfig` (see `Config/Local.example.xcconfig`).
 

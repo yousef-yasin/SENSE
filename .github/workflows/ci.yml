@@ -8,27 +8,39 @@ on:
 jobs:
   core-linux:
     name: SenseCore (Linux)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: swift:6.1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: swift test --package-path Packages/SenseCore
 
   ios:
     name: iOS app
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
       - name: Test SenseCore
         run: swift test --package-path Packages/SenseCore
       - name: Generate project
         run: |
           brew install xcodegen
           xcodegen generate
-      - name: Build
+      - name: Build for iOS Simulator
         run: |
           xcodebuild build \
             -project SENSE.xcodeproj \
             -scheme SENSE \
             -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Build for iPhone (unsigned)
+        run: |
+          xcodebuild build \
+            -project SENSE.xcodeproj \
+            -scheme SENSE \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
             CODE_SIGNING_ALLOWED=NO

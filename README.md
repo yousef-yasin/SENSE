@@ -111,22 +111,31 @@ Text ─────────────────────────
 ### Run the app
 
 ```bash
-git clone <your-fork-url> SENSE
+git clone https://github.com/yousef-yasin/SENSE.git
 cd SENSE
-brew install xcodegen
-xcodegen generate
-open SENSE.xcodeproj
+scripts/setup.sh
 ```
 
-To run on a device, set your signing team. Either select it in Xcode under *Signing & Capabilities*, or keep it out of version control:
-
-```bash
-cp Config/Local.example.xcconfig Config/Local.xcconfig
-# edit DEVELOPMENT_TEAM and SENSE_BUNDLE_IDENTIFIER
-xcodegen generate
-```
+`scripts/setup.sh` installs XcodeGen with Homebrew if it's missing, generates `SENSE.xcodeproj` from `project.yml` and opens it in Xcode. The manual equivalent is `brew install xcodegen && xcodegen generate && open SENSE.xcodeproj`.
 
 Select the **SENSE** scheme and run. No API keys or accounts are needed.
+
+### Install on your iPhone
+
+A free Apple ID is enough. SENSE uses no capabilities that require a paid Apple Developer Program membership (no push notifications, iCloud or App Groups).
+
+1. **Mac:** install Xcode from the Mac App Store and open it once. Use the latest release: an older Xcode can't install apps on an iPhone running a newer iOS.
+2. **Mac:** in Xcode → *Settings* → *Accounts*, add your Apple ID. A *Personal Team* is created for it.
+3. **iPhone:** connect it to the Mac with a cable, unlock it and tap *Trust This Computer*.
+4. **Mac:** run `scripts/setup.sh` in the cloned repository.
+5. **Xcode:** select the **SENSE** project → **SENSE** target → *Signing & Capabilities*, keep *Automatically manage signing* on, and choose your team.
+   If Xcode says the bundle identifier isn't available, change it there to something unique, such as `app.sense.ios.yourname`.
+6. **Xcode:** in the toolbar, choose the **SENSE** scheme and your iPhone as the run destination, then press **⌘R**.
+7. **iPhone:** if prompted, turn on *Settings* → *Privacy & Security* → *Developer Mode* and restart. After the first install, if iOS says the developer isn't trusted, open *Settings* → *General* → *VPN & Device Management*, select your Apple ID and tap *Trust*. Press **⌘R** again.
+
+`xcodegen generate` recreates the project and discards a team chosen in Xcode. To keep it, sign through the ignored `Config/Local.xcconfig` instead: run `scripts/setup.sh TEAM_ID [BUNDLE_ID]`, where `TEAM_ID` is shown in Xcode under the target's *Build Settings* → *Development Team* once a team is selected.
+
+With a free Apple ID, the app stops launching after 7 days; connect the iPhone and press ⌘R to reinstall. Memories on the device are kept. A paid membership extends this to one year and is required for TestFlight or the App Store.
 
 ### Run the tests
 
