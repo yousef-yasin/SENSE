@@ -79,6 +79,7 @@ SENSE/
 │   ├── Services/                 Permissions, location, notifications, network status, settings, Keychain.
 │   ├── Features/                 Home, Capture review, Live look, Voice, Text, Memories, Reminders, Places, Settings, Onboarding.
 │   └── Shared/                   Reusable views and presentation helpers.
+├── web/                          Installable web app (PWA): SenseCore logic in TypeScript, Preact UI, IndexedDB storage.
 ├── Config/                       Build configuration (signing values live in an ignored Local.xcconfig).
 └── project.yml                   XcodeGen project definition.
 ```
@@ -136,6 +137,31 @@ A free Apple ID is enough. SENSE uses no capabilities that require a paid Apple 
 `xcodegen generate` recreates the project and discards a team chosen in Xcode. To keep it, sign through the ignored `Config/Local.xcconfig` instead: run `scripts/setup.sh TEAM_ID [BUNDLE_ID]`, where `TEAM_ID` is shown in Xcode under the target's *Build Settings* → *Development Team* once a team is selected.
 
 With a free Apple ID, the app stops launching after 7 days; connect the iPhone and press ⌘R to reinstall. Memories on the device are kept. A paid membership extends this to one year and is required for TestFlight or the App Store.
+
+### Web app (PWA)
+
+A web version of SENSE runs in any modern browser at **https://yousef-yasin.github.io/SENSE/**. It needs no install, account or API key. On iPhone, open it in Safari, tap **Share → Add to Home Screen**, and SENSE opens full screen like an app. In Chrome or Edge on Windows, use **Install SENSE** in the address bar or menu.
+
+The web app lives in [`web/`](web) and reuses SenseCore's logic, ported to TypeScript. The same unit tests are ported too, so the TypeScript and Swift versions are checked against the same cases. Everything runs in the browser, and data is stored only in that browser on that device.
+
+| Capability | Web app |
+| --- | --- |
+| Camera & photos | Take or choose a photo, or use the live camera view. Text is read on device with [Tesseract.js](https://github.com/naptha/tesseract.js); its English model downloads once on first use and is then cached. |
+| Understanding, memories, search | Same rules as the iPhone app: classification, dates, deadlines, amounts, contacts, intents, keyword and similarity search. Stored in IndexedDB. |
+| Voice | Uses the browser's speech recognition (Safari, Chrome, Edge). Depending on the browser, audio may be processed by Apple or Google. Where it's unsupported, the Text sheet and keyboard dictation still work. |
+| Reminders | Time-based reminders send a notification if one comes due while SENSE is open (on iPhone, notifications need the Home Screen app, iOS 16.4+). Due reminders are also shown when you next open SENSE. **Add to Calendar** exports any reminder as an `.ics` event, so the system calendar alerts you even when SENSE is closed. |
+| Not available on the web | Place-based reminders (browsers can't monitor regions in the background), image classification of objects without text, and location tagging. Use the iPhone app for these. |
+| Optional AI provider | Any OpenAI-compatible endpoint that is served over HTTPS and allows cross-origin requests. A plain-HTTP server on your local network can't be reached from the hosted page. |
+
+```bash
+cd web
+npm install
+npm test          # unit tests (core logic + calendar export)
+npm run dev       # local development server
+npm run build     # production build in web/dist
+```
+
+Every push to `main` that changes `web/` runs the tests, builds the app and publishes it to the `gh-pages` branch, which GitHub Pages serves.
 
 ### Run the tests
 
